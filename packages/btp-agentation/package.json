@@ -1,0 +1,38 @@
+{
+  "name": "btp-agentation",
+  "version": "5.0.4",
+  "description": "Visual feedback tool for SAPUI5/Fiori Elements — select UI elements, add annotations, and send structured feedback to GitHub Copilot",
+  "main": "index.js",
+  "bin": {
+    "btp-agentation": "./bin/cli.js"
+  },
+  "scripts": {
+    "test": "echo \"No tests yet\" && exit 0"
+  },
+  "keywords": [
+    "sap",
+    "btp",
+    "fiori",
+    "ui5",
+    "sapui5",
+    "openui5",
+    "agentation",
+    "feedback",
+    "annotation",
+    "copilot",
+    "fiori-elements",
+    "developer-tools"
+  ],
+  "author": "pcmn1000",
+  "license": "MIT",
+  "homepage": "https://pcmn1000.github.io/my-side-by-side-app/",
+  "files": [
+    "index.js",
+    "btp-agentation.js",
+    "bin/",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=14"
+  }
+}

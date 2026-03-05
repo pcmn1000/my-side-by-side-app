@@ -1,0 +1,45 @@
+# === npm配布から除外するファイル ===
+
+# ビルド成果物・一時ファイル
+node_modules/
+gen/
+mta_archives/
+*.mtar
+tmp-gif-recording/
+
+# IDE / エディタ設定
+.vscode/
+.idea/
+
+# ドキュメント・GitHub Pages（npm利用者には不要）
+docs/
+
+# GIF生成スクリプト（開発用のみ）
+scripts/
+
+# OS生成ファイル
+.DS_Store
+Thumbs.db
+
+# ログ
+*.log
+npm-debug.log*
+
+# CF / BTP 固有（npm利用者には不要）
+mta.yaml
+xs-security.json
+Makefile_*.mta
+default-*.json
+
+# Approuter ビルド成果物（.gitignoreで除外されていたもの）
+app/router/resources/
+app/router/node_modules/
+app/router/package-lock.json
+
+# Git関連
+.git/
+.gitignore
+
+# 大きなREADME補助ファイル（メインREADMEは残す）
+README-s4hana-integration.md
+README-supplier-portal.md

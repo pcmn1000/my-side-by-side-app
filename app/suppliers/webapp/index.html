@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html style="height: 100%">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>サプライヤー評価ポータル</title>
+    <script>
+        // Comprehensive sap.ushell.Container mock for Fiori Elements standalone deployment.
+        // sap.fe.core.AppComponent requires ushell Container + ShellUIService.
+        (function() {
+            window.sap = window.sap || {};
+            sap.ushell = sap.ushell || {};
+
+            var oUser = {
+                getFullName: function() { return "User"; },
+                getFirstName: function() { return ""; },
+                getLastName: function() { return ""; },
+                getEmail: function() { return ""; },
+                getId: function() { return "DEFAULT_USER"; },
+                getTheme: function() { return "sap_horizon"; },
+                getLanguage: function() { return "JA"; },
+                getContentDensity: function() { return "compact"; },
+                getAccessibilityMode: function() { return false; },
+                isSetChangedPropertiesProvided: function() { return false; },
+                getChangedProperties: function() { return []; },
+                getLanguageBcp47: function() { return "ja"; },
+                setContentDensity: function() {},
+                resetChangedProperties: function() {},
+                resetChangedProperty: function() {}
+            };
+
+            var oUserInfoSvc = {
+                getUser: function() { return oUser; },
+                getTheme: function() { return "sap_horizon"; },
+                getLanguage: function() { return "JA"; }
+            };
+
+            var oAppStateSvc = {
+                createEmptyAppState: function() {
+                    return {
+                        _data: {},
+                        save: function() { return Promise.resolve(); },
+                        getKey: function() { return "MOCK_KEY"; },
+                        getData: function() { return this._data; },
+                        setData: function(d) { this._data = d; }
+                    };
+                },
+                storeInnerAppStateAsync: function(k) { return Promise.resolve(k || "MOCK"); },
+                getInnerAppStateAsync: function() { return Promise.resolve({}); },
+                getAppState: function(c, k) {
+                    return Promise.resolve({
+                        getData: function() { return {}; },
+                        setData: function() {},
+                        save: function() { return Promise.resolve(); },
+                        getKey: function() { return k || ""; }
+                    });
+                },
+                makeStatePersistent: function() { return Promise.resolve(); }
+            };
+
+            var oShellNavSvc = {
+                hashChanger: null,
+                registerNavigationFilter: function() { return "filter"; },
+                unregisterNavigationFilter: function() {},
+                toExternal: function() {},
+                toHash: function() { return ""; },
+                hrefForExternal: function() { return "#"; }
+            };
+
+            var oURLParsingSvc = {
+                parseShellHash: function(s) {
+                    return { semanticObject: "", action: "", params: {}, appSpecificRoute: s || "" };
+                },
+                constructShellHash: function() { return ""; },
+                splitHash: function(s) { return { shellPart: "", appSpecificRoute: s || "" }; },
+                getShellHash: function() { return ""; },
+                parseParameters: function() { return {}; }
+            };
+
+            var oCrossAppNavSvc = {
+                hrefForExternal: function() { return "#"; },
+                toExternal: function() {},
+                isIntentSupported: function() { return Promise.resolve({}); },
+                isNavigationSupported: function(a) {
+                    return Promise.resolve((a || []).map(function() { return { supported: false }; }));
+                },
+                getDistinctSemanticObjects: function() { return Promise.resolve([]); },
+                getLinks: function() { return Promise.resolve([]); },
+                getPrimaryIntent: function() { return Promise.resolve(null); },
+                backToPreviousApp: function() { window.history.back(); },
+                hrefForAppSpecificHash: function(s) { return "#" + (s || ""); },
+                expandCompactHash: function(s) { return Promise.resolve(s); }
+            };
+
+            var oNavSvc = {
+                navigate: function() {},
+                getHref: function() { return Promise.resolve(""); }
+            };
+
+            var _services = {
+                "AppState": oAppStateSvc,
+                "ShellNavigation": oShellNavSvc,
+                "URLParsing": oURLParsingSvc,
+                "CrossApplicationNavigation": oCrossAppNavSvc,
+                "Navigation": oNavSvc,
+                "UserInfo": oUserInfoSvc
+            };
+
+            sap.ushell.Container = {
+                getServiceAsync: function(n) { return Promise.resolve(_services[n] || {}); },
+                getService: function(n) { return _services[n] || {}; },
+                getDirtyFlag: function() { return false; },
+                setDirtyFlag: function() {},
+                registerDirtyStateProvider: function() {},
+                deregisterDirtyStateProvider: function() {},
+                getLogonSystem: function() {
+                    return {
+                        getName: function() { return ""; },
+                        getClient: function() { return ""; },
+                        getPlatform: function() { return ""; },
+                        isTrial: function() { return false; }
+                    };
+                },
+                getUser: function() { return oUser; },
+                getRenderer: function() {
+                    return Promise.resolve({ getRouter: function() { return null; } });
+                },
+                attachRendererCreatedEvent: function() {},
+                detachRendererCreatedEvent: function() {},
+                getFLPUrl: function() { return window.location.href; },
+                getFLPUrlAsync: function() { return Promise.resolve(window.location.href); }
+            };
+        })();
+    </script>
+    <script id="sap-ui-bootstrap"
+        src="https://sapui5.hana.ondemand.com/1.120.25/resources/sap-ui-core.js"
+        data-sap-ui-theme="sap_horizon"
+        data-sap-ui-async="true"
+        data-sap-ui-compatVersion="edge"
+        data-sap-ui-frameOptions="allow"
+        data-sap-ui-resourceroots='{ "suppliers": "./" }'>
+    </script>
+    <script>
+        // Register ushell Container as AMD module (sap.fe.core checks for this)
+        sap.ui.define("sap/ushell/Container", [], function() {
+            return sap.ushell.Container;
+        });
+
+        // KEY FIX: Register ShellUIService factory INSTANCE in ServiceFactoryRegistry.
+        // Previous approach used sap.ui.define (AMD module) which is a DIFFERENT registry.
+        // ServiceFactoryRegistry is separate and requires .register() with an actual instance.
+        sap.ui.require([
+            "sap/ui/core/service/ServiceFactoryRegistry",
+            "sap/ui/core/service/ServiceFactory",
+            "sap/ui/core/service/Service",
+            "sap/m/Shell",
+            "sap/ui/core/ComponentContainer"
+        ], function(ServiceFactoryRegistry, ServiceFactory, Service, Shell, ComponentContainer) {
+
+            // ShellUIService stub implementation
+            var ShellUIServiceImpl = Service.extend("sap.ushell.ui5service.ShellUIServiceImpl", {
+                init: function() {
+                    // Ensure the service context scopeObject has getId() before calling super
+                    var oCtx = arguments && arguments[1];
+                    if (oCtx && oCtx.scopeObject && !oCtx.scopeObject.getId) {
+                        oCtx.scopeObject.getId = function() { return "mockScopeObject"; };
+                    }
+                    try { Service.prototype.init.apply(this, arguments); } catch(e) { /* ignore */ }
+                    this._title = "";
+                    this._backNavCallback = null;
+                },
+                getTitle: function() { return this._title; },
+                setTitle: function(t) { this._title = t; return this; },
+                getHierarchy: function() { return []; },
+                setHierarchy: function() { return this; },
+                setRelatedApps: function() { return this; },
+                getRelatedApps: function() { return []; },
+                setBackNavigation: function(fn) {
+                    var self = this;
+                    self._backNavCallback = fn || null;
+
+                    var container = document.getElementById("shell-back-container");
+
+                    if (fn) {
+                        if (!container) {
+                            container = document.createElement("div");
+                            container.id = "shell-back-container";
+                            container.style.cssText = "position:fixed;top:4px;left:6px;z-index:10000";
+                            document.body.appendChild(container);
+
+                            sap.ui.require(["sap/m/Button"], function(Button) {
+                                self._backButton = new Button("shell-back-btn", {
+                                    icon: "sap-icon://nav-back",
+                                    type: "Transparent",
+                                    tooltip: "戻る",
+                                    press: function() {
+                                        if (self._backNavCallback) self._backNavCallback();
+                                    }
+                                });
+                                self._backButton.addStyleClass("sapMShellBackBtn");
+                                self._backButton.placeAt(container);
+
+                                if (!document.getElementById("shell-back-btn-style")) {
+                                    var style = document.createElement("style");
+                                    style.id = "shell-back-btn-style";
+                                    style.textContent = [
+                                        ".sapMShellBackBtn .sapMBtnIcon { color: rgba(255,255,255,0.85) !important; font-size: 1rem !important; }",
+                                        ".sapMShellBackBtn:hover .sapMBtnIcon { color: #fff !important; }",
+                                        ".sapMShellBackBtn .sapMBtnInner { background: transparent !important; border: none !important; min-width: 2rem; min-height: 2rem; border-radius: 50% !important; padding: 0 !important; }",
+                                        ".sapMShellBackBtn:hover .sapMBtnInner { background: rgba(255,255,255,0.15) !important; }",
+                                        ".sapMShellBackBtn .sapMBtnInner:focus { outline: 1px dotted rgba(255,255,255,0.6); outline-offset: -2px; }"
+                                    ].join("\n");
+                                    document.head.appendChild(style);
+                                }
+                            });
+                        } else {
+                            container.style.display = "block";
+                        }
+                    } else {
+                        if (container) container.style.display = "none";
+                    }
+                    return this;
+                },
+                getBackNavigation: function() { return this._backNavCallback; }
+            });
+
+            // Create a factory INSTANCE (not a class) and register it
+            var ShellUIServiceFactory = ServiceFactory.extend("ShellUIServiceFactory", {
+                createInstance: function(oServiceContext) {
+                    // Ensure scopeObject has getId for Service constructor
+                    if (oServiceContext && oServiceContext.scopeObject && !oServiceContext.scopeObject.getId) {
+                        oServiceContext.scopeObject.getId = function() { return "mockScope"; };
+                    }
+                    return Promise.resolve(new ShellUIServiceImpl(oServiceContext));
+                }
+            });
+            var oFactoryInstance = new ShellUIServiceFactory();
+            ServiceFactoryRegistry.register("sap.ushell.ui5service.ShellUIService", oFactoryInstance);
+
+            // Now safe to create the component (factory is registered before component init)
+            new Shell({
+                app: new ComponentContainer({
+                    name: "suppliers",
+                    async: true,
+                    height: "100%"
+                }),
+                appWidthLimited: false
+            }).placeAt("content");
+        });
+    </script>
+    <!-- Fiori Agentation: 開発時ビジュアルフィードバックツール (Ctrl+Shift+A) -->
+    <script src="fiori-agentation.js"></script>
+</head>
+<body class="sapUiBody sapUiSizeCompact" id="content" style="height: 100%">
+</body>
+</html>

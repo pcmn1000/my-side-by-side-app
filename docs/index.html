@@ -1,0 +1,1508 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BTP Agentation — SAP Fiori ビジュアルフィードバックツール</title>
+    <meta name="description" content="SAP BTP / Fiori Elements の UI 要素をクリックして注記を追加。GitHub Copilot 等の AI アシスタントに送信し、修正を効率化するオープンソースツール。">
+    <!-- Open Graph / LinkedIn -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://pcmn1000.github.io/my-side-by-side-app/">
+    <meta property="og:title" content="BTP Agentation — SAP Fiori ビジュアルフィードバックツール">
+    <meta property="og:description" content="SAP BTP / Fiori Elements の UI 要素をクリックして注記を追加。GitHub Copilot 等の AI アシスタントに送信し、修正を効率化。オープンソース、ブラウザ完結、データ外部送信なし。">
+    <meta property="og:image" content="https://pcmn1000.github.io/my-side-by-side-app/images/og-card.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        /* ============================================================
+         * SAP Fiori Morning Horizon Theme
+         * ============================================================ */
+        :root {
+            --sapBrandColor: #0070F2;
+            --sapBaseColor: #FFFFFF;
+            --sapBackgroundColor: #F5F6F7;
+            --sapShellColor: #354A5F;
+            --sapTextColor: #131E29;
+            --sapTitleColor: #131E29;
+            --sapSubtitleColor: #556B82;
+            --sapBorderColor: #758CA4;
+            --sapPositiveColor: #256F3A;
+            --sapInformativeColor: #0070F2;
+            --sapNegativeColor: #AA0808;
+            --sapCriticalColor: #E76500;
+            --sapPositiveBg: #F5FAE5;
+            --sapInformativeBg: #E1F4FF;
+            --sapGroupContentBg: #FFFFFF;
+            --sapSectionBorder: #E5E5E5;
+            --sapHeaderBorder: #D9D9D9;
+            --sapTableGroupBg: #EFF1F2;
+            --sapAccent5: #5D36FF;
+            --sapAccent6: #0057D2;
+            --sapAccent7: #046C7A;
+            --sapContent_Shadow1: 0 1px 4px rgba(0,0,0,0.1);
+            --sapContent_Shadow2: 0 4px 16px rgba(0,0,0,0.12);
+            --sapFontFamily: '72', '72full', 'Noto Sans JP', Arial, Helvetica, sans-serif;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: var(--sapBackgroundColor);
+            color: var(--sapTextColor);
+            font-family: var(--sapFontFamily);
+            font-size: 0.875rem;
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Shell Bar */
+        .sapShellBar {
+            background: var(--sapBrandColor);
+            height: 2.75rem;
+            display: flex;
+            align-items: center;
+            padding: 0 1rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+        }
+        .sapShellBar__logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #fff;
+            font-size: 0.875rem;
+            font-weight: 700;
+            text-decoration: none;
+        }
+        .sapShellBar__spacer { flex: 1; }
+        .sapShellBar__link {
+            color: rgba(255,255,255,0.85);
+            text-decoration: none;
+            font-size: 0.8125rem;
+            padding: 0.375rem 0.75rem;
+            border-radius: 0.25rem;
+            transition: background 0.15s;
+        }
+        .sapShellBar__link:hover { background: rgba(255,255,255,0.1); color: #fff; }
+
+        /* Hero */
+        .sapObjectPageHeader {
+            background: var(--sapBaseColor);
+            border-bottom: 1px solid var(--sapHeaderBorder);
+            padding: 2rem 0 1.5rem;
+        }
+        .sapObjectPageHeader__inner {
+            max-width: 75rem;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+        .sapObjectPageHeader__icon {
+            width: 4.5rem;
+            height: 4.5rem;
+            background: linear-gradient(135deg, var(--sapBrandColor), var(--sapAccent6));
+            border-radius: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            box-shadow: var(--sapContent_Shadow1);
+        }
+        .sapObjectPageHeader__icon svg { width: 2.5rem; height: 2.5rem; }
+        .sapObjectPageHeader__content { flex: 1; }
+        .sapObjectPageHeader__title { font-size: 1.75rem; font-weight: 700; color: var(--sapTitleColor); letter-spacing: -0.25px; }
+        .sapObjectPageHeader__subtitle { color: var(--sapSubtitleColor); font-size: 0.9375rem; margin-top: 0.25rem; }
+        .sapObjectPageHeader__attributes { display: flex; gap: 1rem; margin-top: 0.75rem; flex-wrap: wrap; }
+        .sapObjectStatus {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            font-size: 0.8125rem;
+            padding: 0.125rem 0.5rem;
+            border-radius: 0.25rem;
+        }
+        .sapObjectStatus--info { color: var(--sapInformativeColor); background: var(--sapInformativeBg); }
+        .sapObjectStatus--positive { color: var(--sapPositiveColor); background: var(--sapPositiveBg); }
+
+        /* Page Content */
+        .sapObjectPageContent { max-width: 75rem; margin: 0 auto; padding: 1.5rem 2rem 3rem; }
+        .sapUxAPObjectPageSection { margin-bottom: 1.5rem; }
+        .sapUxAPObjectPageSection__title {
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: var(--sapTitleColor);
+            padding: 0.75rem 0;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.625rem;
+        }
+        .sapUxAPObjectPageSection__title::before {
+            content: '';
+            display: inline-block;
+            width: 4px;
+            height: 1.25rem;
+            background: linear-gradient(180deg, var(--sapBrandColor), var(--sapAccent5));
+            border-radius: 2px;
+            flex-shrink: 0;
+        }
+
+        /* Cards */
+        .sapFCard {
+            background: var(--sapGroupContentBg);
+            border: 1px solid var(--sapSectionBorder);
+            border-radius: 0.5rem;
+            box-shadow: var(--sapContent_Shadow1);
+            overflow: hidden;
+            transition: box-shadow 0.2s;
+        }
+        .sapFCard:hover { box-shadow: var(--sapContent_Shadow2); }
+        .sapFCard__header { padding: 1rem 1rem 0.75rem; border-bottom: 1px solid var(--sapSectionBorder); }
+        .sapFCard__title { font-size: 1rem; font-weight: 700; color: var(--sapTitleColor); }
+        .sapFCard__content { padding: 1rem; }
+
+        /* Bookmarklet Featured */
+        .sapFeaturedCard {
+            background: var(--sapGroupContentBg);
+            border: 2px solid var(--sapBrandColor);
+            border-radius: 0.75rem;
+            padding: 2rem;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0, 112, 242, 0.1);
+        }
+        .sapFeaturedCard__title { font-size: 1.25rem; font-weight: 700; color: var(--sapTitleColor); margin-bottom: 0.25rem; }
+        .sapFeaturedCard__description { color: var(--sapSubtitleColor); font-size: 0.875rem; margin-bottom: 1.5rem; }
+        .sapMBtnEmphasized {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: var(--sapBrandColor);
+            color: #fff;
+            font-size: 0.875rem;
+            font-weight: 700;
+            padding: 0.625rem 1.5rem;
+            border: none;
+            border-radius: 0.5rem;
+            text-decoration: none;
+            cursor: grab;
+            transition: background 0.15s, box-shadow 0.15s;
+            box-shadow: 0 2px 8px rgba(0, 112, 242, 0.25);
+            user-select: none;
+            font-family: var(--sapFontFamily);
+        }
+        .sapMBtnEmphasized:hover { background: #0064D9; box-shadow: 0 4px 16px rgba(0, 112, 242, 0.35); }
+        .sapMBtnEmphasized:active { cursor: grabbing; background: #0057C2; }
+        .dragHint { display: block; color: var(--sapSubtitleColor); font-size: 0.75rem; margin-top: 0.75rem; }
+
+        /* Steps */
+        .sapMStep { display: flex; gap: 1rem; padding: 0.875rem 0; }
+        .sapMStep + .sapMStep { border-top: 1px solid rgba(0,0,0,0.04); }
+        .sapMStep__indicator { display: flex; flex-direction: column; align-items: center; flex-shrink: 0; }
+        .sapMStep__number {
+            width: 2rem; height: 2rem; border-radius: 50%;
+            background: linear-gradient(135deg, var(--sapBrandColor), var(--sapAccent6));
+            color: #fff;
+            font-size: 0.8125rem; font-weight: 700;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 2px 6px rgba(0,112,242,0.2);
+        }
+        .sapMStep__line { width: 2px; flex: 1; background: linear-gradient(180deg, var(--sapBrandColor) 0%, var(--sapSectionBorder) 100%); margin-top: 0.5rem; border-radius: 1px; }
+        .sapMStep:last-child .sapMStep__line { display: none; }
+        .sapMStep__title { font-size: 0.9375rem; font-weight: 700; color: var(--sapTitleColor); }
+        .sapMStep__text { font-size: 0.8125rem; color: var(--sapSubtitleColor); margin-top: 0.125rem; line-height: 1.6; }
+
+        /* Features */
+        .sapFeatureGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr)); gap: 0.75rem; }
+        .sapFeatureTile {
+            background: var(--sapGroupContentBg);
+            border: 1px solid var(--sapSectionBorder);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            transition: border-color 0.15s, box-shadow 0.15s;
+        }
+        .sapFeatureTile:hover { border-color: var(--sapBrandColor); box-shadow: var(--sapContent_Shadow1); }
+        .sapFeatureTile__icon {
+            width: 2.5rem; height: 2.5rem; border-radius: 0.5rem;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.25rem; margin-bottom: 0.75rem;
+        }
+        .sapFeatureTile__icon--blue { background: #E1F4FF; color: var(--sapBrandColor); }
+        .sapFeatureTile__icon--green { background: #F5FAE5; color: var(--sapPositiveColor); }
+        .sapFeatureTile__icon--orange { background: #FFF8D6; color: var(--sapCriticalColor); }
+        .sapFeatureTile__icon--purple { background: #F2E8FF; color: var(--sapAccent5); }
+        .sapFeatureTile__icon--teal { background: #E6F7F8; color: var(--sapAccent7); }
+        .sapFeatureTile__icon--red { background: #FFEAF4; color: var(--sapNegativeColor); }
+        .sapFeatureTile__title { font-size: 0.875rem; font-weight: 700; color: var(--sapTitleColor); margin-bottom: 0.25rem; }
+        .sapFeatureTile__text { font-size: 0.8125rem; color: var(--sapSubtitleColor); line-height: 1.4; }
+
+        /* Code */
+        .sapCodeCard { background: var(--sapGroupContentBg); border: 1px solid var(--sapSectionBorder); border-radius: 0.5rem; overflow: hidden; margin-bottom: 0.75rem; transition: border-color 0.2s; }
+        .sapCodeCard:hover { border-color: var(--sapBrandColor); }
+        .sapCodeCard__header {
+            background: linear-gradient(90deg, var(--sapTableGroupBg) 0%, rgba(239,241,242,0.5) 100%); padding: 0.5rem 0.75rem;
+            font-size: 0.8125rem; font-weight: 700; color: var(--sapSubtitleColor);
+            display: flex; align-items: center; justify-content: space-between;
+            border-bottom: 1px solid var(--sapSectionBorder);
+        }
+        .sapCodeCard__copyBtn {
+            background: transparent; border: 1px solid var(--sapBorderColor); border-radius: 0.25rem;
+            color: var(--sapSubtitleColor); font-size: 0.75rem; padding: 0.125rem 0.5rem;
+            cursor: pointer; font-family: var(--sapFontFamily); transition: background 0.15s, color 0.15s;
+        }
+        .sapCodeCard__copyBtn:hover { background: var(--sapBrandColor); color: #fff; border-color: var(--sapBrandColor); }
+        .sapCodeCard__copyBtn.copied { background: var(--sapPositiveColor); color: #fff; border-color: var(--sapPositiveColor); }
+        .sapCodeCard__body { padding: 0.75rem 1rem; font-family: 'Consolas', 'Courier New', monospace; font-size: 0.8125rem; color: var(--sapTitleColor); overflow-x: auto; white-space: pre; background: linear-gradient(135deg, #FAFBFC 0%, #F5F6F7 100%); }
+        kbd { display: inline-block; background: var(--sapTableGroupBg); border: 1px solid var(--sapHeaderBorder); border-radius: 0.25rem; padding: 0.0625rem 0.375rem; font-family: 'Consolas', monospace; font-size: 0.75rem; color: var(--sapTitleColor); box-shadow: 0 1px 0 var(--sapHeaderBorder); }
+
+        /* Tokens */
+        .sapMTokens { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+        .sapMToken { background: var(--sapGroupContentBg); border: 1px solid var(--sapBorderColor); color: var(--sapSubtitleColor); font-size: 0.8125rem; padding: 0.3rem 0.75rem; border-radius: 1rem; transition: all 0.15s ease; }
+        .sapMToken:hover { border-color: var(--sapBrandColor); color: var(--sapBrandColor); background: var(--sapInformativeBg); }
+
+        /* npm */
+        .sapNpmSection { background: var(--sapGroupContentBg); border: 1px solid var(--sapSectionBorder); border-radius: 0.5rem; padding: 1.5rem; display: flex; align-items: center; gap: 1.5rem; box-shadow: var(--sapContent_Shadow1); }
+        .sapNpmSection__icon { width: 3rem; height: 3rem; flex-shrink: 0; }
+        .sapNpmSection__content { flex: 1; }
+        .sapNpmSection__title { font-size: 1rem; font-weight: 700; color: var(--sapTitleColor); margin-bottom: 0.25rem; }
+        .sapNpmSection__desc { font-size: 0.8125rem; color: var(--sapSubtitleColor); margin-bottom: 0.75rem; }
+        .sapNpmInstall {
+            display: inline-flex; align-items: center; gap: 0.5rem;
+            background: #1E1E1E; color: #4EC9B0; font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 0.875rem; padding: 0.5rem 1rem; border-radius: 0.375rem; cursor: pointer; border: none; transition: background 0.15s;
+        }
+        .sapNpmInstall:hover { background: #2D2D2D; }
+        .sapNpmInstall__prompt { color: #9CDCFE; user-select: none; }
+        .sapNpmInstall.copied { background: var(--sapPositiveColor); color: #fff; }
+
+        /* Tabs */
+        .sapMethodTabs { display: flex; gap: 0.25rem; margin-bottom: 1rem; background: var(--sapTableGroupBg); border-radius: 0.5rem; padding: 0.25rem; }
+        .sapMethodTab {
+            padding: 0.5rem 1rem; font-size: 0.8125rem; font-weight: 500;
+            color: var(--sapSubtitleColor); cursor: pointer; border: none; background: transparent;
+            border-radius: 0.375rem; transition: all 0.2s ease; font-family: var(--sapFontFamily);
+        }
+        .sapMethodTab:hover { color: var(--sapTitleColor); background: rgba(255,255,255,0.6); }
+        .sapMethodTab.active { color: var(--sapBrandColor); background: var(--sapGroupContentBg); font-weight: 700; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+        .sapMethodPanel { display: none; }
+        .sapMethodPanel.active { display: block; }
+
+        /* How It Works – card grid */
+        .sapHowItWorksIntro { margin: 0 0 1.25rem; font-size: 0.875rem; line-height: 1.8; color: var(--sapTextColor); }
+        .sapHowItWorksGrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
+        .sapHowItWorksCard {
+            border-radius: 0.75rem; padding: 1.25rem; position: relative; overflow: hidden;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .sapHowItWorksCard:hover { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(0,0,0,0.1); }
+        .sapHowItWorksCard--1 { background: linear-gradient(135deg, #E1F4FF 0%, #C2E6FF 100%); border: 1px solid #A3D5FF; }
+        .sapHowItWorksCard--2 { background: linear-gradient(135deg, #F0FAE5 0%, #D9F2C2 100%); border: 1px solid #B5E08C; }
+        .sapHowItWorksCard--3 { background: linear-gradient(135deg, #FFF6E0 0%, #FFE8A3 100%); border: 1px solid #FFDA6A; }
+        .sapHowItWorksCard--4 { background: linear-gradient(135deg, #F2E8FF 0%, #DFC8FF 100%); border: 1px solid #C9A8FF; }
+        .sapHowItWorksCard__num {
+            width: 2rem; height: 2rem; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-size: 0.8125rem; font-weight: 700; color: #fff; margin-bottom: 0.75rem;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+        }
+        .sapHowItWorksCard--1 .sapHowItWorksCard__num { background: var(--sapBrandColor); }
+        .sapHowItWorksCard--2 .sapHowItWorksCard__num { background: var(--sapPositiveColor); }
+        .sapHowItWorksCard--3 .sapHowItWorksCard__num { background: var(--sapCriticalColor); }
+        .sapHowItWorksCard--4 .sapHowItWorksCard__num { background: var(--sapAccent5); }
+        .sapHowItWorksCard__title { font-size: 0.875rem; font-weight: 700; color: var(--sapTitleColor); margin-bottom: 0.375rem; }
+        .sapHowItWorksCard__text { font-size: 0.8125rem; color: var(--sapTextColor); line-height: 1.6; }
+
+        /* Security note box */
+        .sapSecurityNote {
+            display: flex; align-items: center; gap: 0.625rem;
+            background: linear-gradient(90deg, var(--sapInformativeBg) 0%, rgba(232,242,255,0.4) 100%);
+            border: 1px solid rgba(0,112,242,0.15); border-radius: 0.5rem;
+            padding: 0.75rem 1rem; margin-bottom: 1.25rem;
+            font-size: 0.8125rem; color: var(--sapInformativeColor);
+        }
+        .sapSecurityNote__icon { font-size: 1.125rem; flex-shrink: 0; }
+
+        /* Structure info sub-heading */
+        .sapSubHeading {
+            font-size: 0.9375rem; font-weight: 700; color: var(--sapTitleColor);
+            margin: 0 0 0.75rem; padding-left: 0.75rem;
+            border-left: 3px solid var(--sapAccent5);
+        }
+
+        /* Structure info table container */
+        .sapStructureTable {
+            border: 1px solid var(--sapSectionBorder); border-radius: 0.5rem; overflow: hidden;
+        }
+        .sapStructureTable table { width: 100%; border-collapse: collapse; font-size: 0.8125rem; }
+        .sapStructureTable thead tr { background: linear-gradient(90deg, var(--sapTableGroupBg) 0%, rgba(239,241,242,0.5) 100%); }
+        .sapStructureTable th { padding: 0.625rem 0.75rem; text-align: left; color: var(--sapTitleColor); font-weight: 700; white-space: nowrap; border-bottom: 2px solid var(--sapSectionBorder); }
+        .sapStructureTable td { padding: 0.5rem 0.75rem; color: var(--sapTextColor); }
+        .sapStructureTable tbody tr { border-bottom: 1px solid var(--sapSectionBorder); transition: background 0.15s; }
+        .sapStructureTable tbody tr:last-child { border-bottom: none; }
+        .sapStructureTable tbody tr:nth-child(even) { background: rgba(0,0,0,0.015); }
+        .sapStructureTable tbody tr:hover { background: var(--sapInformativeBg); }
+        .sapStructureTable code { background: rgba(0,112,242,0.06); padding: 0.125rem 0.375rem; border-radius: 0.25rem; font-size: 0.75rem; color: var(--sapBrandColor); font-family: 'Consolas', 'Courier New', monospace; }
+        .sapStructureTable td:first-child { white-space: nowrap; font-weight: 600; color: var(--sapTitleColor); }
+
+        /* Footer */
+        .sapMFooter { background: var(--sapGroupContentBg); border-top: 1px solid var(--sapSectionBorder); text-align: center; padding: 1.5rem; margin-top: 2rem; }
+        .sapMFooter__text { color: var(--sapSubtitleColor); font-size: 0.8125rem; }
+        .sapMFooter__link { color: var(--sapBrandColor); text-decoration: none; }
+        .sapMFooter__link:hover { text-decoration: underline; }
+
+        /* Grid */
+        .sapGrid2col { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+        @media (max-width: 768px) {
+            .sapGrid2col { grid-template-columns: 1fr; }
+            .sapObjectPageHeader__inner { flex-direction: column; align-items: flex-start; gap: 1rem; }
+            .sapNpmSection { flex-direction: column; text-align: center; }
+        }
+
+        /* ============================================================
+         * Interactive Demo
+         * ============================================================ */
+        .demo-section {
+            max-width: 75rem;
+            margin: 1.5rem auto;
+            padding: 0 2rem;
+        }
+        .demo-container {
+            position: relative;
+            width: 100%;
+            margin: 0 auto;
+        }
+        .demo-browser {
+            position: relative;
+            width: 100%;
+            height: 320px;
+            background: #F6F5F4;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 0 0 1px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.08);
+            transition: opacity 0.4s ease;
+        }
+        .demo-browser.faded { opacity: 0.35; }
+        .demo-bar {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 10px 12px;
+            background: #fff;
+            border-bottom: 1px solid rgba(0,0,0,0.06);
+        }
+        .demo-dot { width: 8px; height: 8px; border-radius: 50%; }
+        .demo-dot.r { background: #ff5f57; }
+        .demo-dot.y { background: #febc2e; }
+        .demo-dot.g { background: #28c840; }
+        .demo-url {
+            flex: 1; margin-left: 8px; padding: 4px 10px;
+            background: rgba(0,0,0,0.04); border-radius: 6px;
+            font-size: 10px; color: rgba(0,0,0,0.4); font-family: system-ui, sans-serif;
+        }
+        .demo-content {
+            position: relative;
+            height: calc(100% - 38px);
+            display: flex;
+            overflow: hidden;
+        }
+        /* Sidebar */
+        .demo-sidebar {
+            width: 44px; background: #fff;
+            border-right: 1px solid rgba(0,0,0,0.06);
+            padding: 12px 0;
+            display: flex; flex-direction: column; align-items: center; gap: 8px; flex-shrink: 0;
+        }
+        .demo-sidebar-logo { width: 20px; height: 20px; background: #0070F2; border-radius: 5px; margin-bottom: 8px; opacity: 0.8; }
+        .demo-sidebar-icon { width: 16px; height: 16px; background: rgba(0,0,0,0.08); border-radius: 4px; }
+        .demo-sidebar-icon.active { background: rgba(0,112,242,0.15); box-shadow: inset 3px 0 0 #0070F2; }
+        .demo-sidebar-icon.circle { border-radius: 50%; }
+        .demo-sidebar-bottom { margin-top: auto; }
+        /* Main */
+        .demo-main {
+            flex: 1; padding: 14px;
+            display: flex; flex-direction: column; gap: 10px;
+            position: relative; overflow: hidden;
+        }
+        .demo-header { display: flex; align-items: center; justify-content: space-between; }
+        .demo-header-left { display: flex; align-items: center; gap: 8px; }
+        .demo-app-logo { width: 18px; height: 18px; background: linear-gradient(135deg, #0070F2 0%, #354A5F 100%); border-radius: 5px; }
+        .demo-title-text { font-size: 11px; font-weight: 500; color: rgba(0,0,0,0.5); font-family: system-ui, sans-serif; }
+        .demo-btn-placeholder { width: 55px; height: 26px; background: rgba(0,0,0,0.08); border-radius: 5px; }
+        .demo-avatar { width: 28px; height: 28px; border-radius: 50%; background: rgba(0,0,0,0.1); flex-shrink: 0; }
+        /* Metrics */
+        .demo-metrics { display: flex; gap: 12px; }
+        .demo-metric {
+            flex: 1; background: white; border-radius: 8px; padding: 12px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+            transition: box-shadow 0.15s ease;
+        }
+        .demo-metric.selected { box-shadow: 0 0 0 2px #3b82f6; background: rgba(59,130,246,0.04); }
+        .demo-metric-label { width: 45px; height: 5px; background: rgba(0,0,0,0.08); border-radius: 2px; margin-bottom: 8px; }
+        .demo-metric-value { width: 50px; height: 18px; background: rgba(0,0,0,0.1); border-radius: 3px; }
+        .demo-metric-value.wide { width: 65px; }
+        /* Table */
+        .demo-table {
+            flex: 1; background: white; border-radius: 8px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.04); overflow: hidden;
+        }
+        .demo-table-header { display: flex; padding: 10px 14px; border-bottom: 1px solid rgba(0,0,0,0.06); gap: 20px; }
+        .demo-th { height: 6px; background: rgba(0,0,0,0.1); border-radius: 2px; }
+        .demo-table-row { display: flex; padding: 12px 14px; border-bottom: 1px solid rgba(0,0,0,0.04); gap: 20px; align-items: center; }
+        .demo-table-row.selected { background: rgba(59,130,246,0.04); }
+        .demo-td { height: 7px; background: rgba(0,0,0,0.06); border-radius: 2px; }
+        .demo-td-pill { width: 48px; height: 18px; background: rgba(0,0,0,0.04); border-radius: 9px; }
+
+        /* Toolbar */
+        .demo-toolbar {
+            position: absolute; bottom: 12px; right: 12px;
+            display: flex; align-items: center; justify-content: center;
+            background: #1a1a2e;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.25), 0 4px 16px rgba(0,0,0,0.15);
+            transition: width 0.4s cubic-bezier(0.19,1,0.22,1), border-radius 0.4s cubic-bezier(0.19,1,0.22,1), padding 0.4s cubic-bezier(0.19,1,0.22,1);
+            width: 36px; height: 36px; border-radius: 18px;
+        }
+        .demo-toolbar.expanded {
+            width: 195px; border-radius: 20px; padding: 0 6px; justify-content: flex-start;
+        }
+        .demo-toolbar-icon {
+            display: flex; align-items: center; justify-content: center;
+            width: 36px; height: 36px; color: rgba(255,255,255,0.85);
+        }
+        .demo-toolbar.expanded .demo-toolbar-icon { display: none; }
+        .demo-toolbar-buttons { display: none; align-items: center; gap: 3px; }
+        .demo-toolbar.expanded .demo-toolbar-buttons { display: flex; }
+        .demo-toolbar-btn {
+            width: 28px; height: 28px; border-radius: 50%; background: transparent;
+            display: flex; align-items: center; justify-content: center;
+            color: rgba(255,255,255,0.85); transition: color 0.2s, background 0.2s;
+        }
+        .demo-toolbar-btn.active { color: #4ade80; background: rgba(74,222,128,0.15); }
+        .demo-toolbar-btn.emp { color: #e0e0f0; }
+        .demo-toolbar-btn.emp:hover { color: #4ade80; }
+        .demo-toolbar-divider { width: 1px; height: 12px; background: rgba(255,255,255,0.15); margin: 0 2px; }
+
+        /* Badge */
+        .demo-badge {
+            position: absolute; top: -2px; right: -2px;
+            display: inline-flex; align-items: center; justify-content: center;
+            min-width: 14px; height: 14px; border-radius: 7px;
+            background: #3b82f6; color: #fff; font-size: 8px; font-weight: 700;
+            font-family: system-ui, sans-serif; pointer-events: none;
+        }
+
+        /* Hover highlight */
+        .demo-hover-hl {
+            position: absolute; border: 2px dashed #4ade80;
+            background: rgba(74,222,128,0.08); pointer-events: none; z-index: 4;
+            border-radius: 8px;
+            opacity: 0; transition: opacity 0.2s ease;
+        }
+        .demo-hover-hl.visible { opacity: 1; }
+
+        /* Blue selection highlight */
+        .demo-select-hl {
+            position: absolute; border: 2px solid rgba(59,130,246,0.6);
+            border-radius: 8px; background: transparent; pointer-events: none;
+            opacity: 0; transition: opacity 0.15s ease;
+        }
+        .demo-select-hl.visible { opacity: 1; }
+
+        /* Markers */
+        .demo-marker {
+            position: absolute; width: 22px; height: 22px;
+            background: #3b82f6; color: white; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 11px; font-weight: 600; font-family: system-ui, sans-serif;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+            opacity: 0; transform: translate(-50%,-50%) scale(0.3);
+            transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.22,1,0.36,1);
+            z-index: 40;
+        }
+        .demo-marker.visible { opacity: 1; transform: translate(-50%,-50%) scale(1); }
+
+        /* Popup */
+        .demo-popup {
+            position: absolute; width: 210px; padding: 10px 12px 12px;
+            background: #1a1a2e; border-radius: 14px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.3), 0 0 0 1px rgba(255,255,255,0.08);
+            opacity: 0; transform: translate(-50%,0) scale(0.95) translateY(4px);
+            transition: opacity 0.25s ease, transform 0.25s cubic-bezier(0.34,1.56,0.64,1);
+            z-index: 50;
+        }
+        .demo-popup.visible { opacity: 1; transform: translate(-50%,0) scale(1) translateY(0); }
+        .demo-popup-header {
+            font-size: 10px; font-weight: 500; color: rgba(255,255,255,0.5);
+            margin-bottom: 6px; font-family: system-ui, sans-serif;
+        }
+        .demo-popup-input {
+            width: 100%; height: 32px; padding: 6px 8px;
+            background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 6px; font-size: 10px; color: #fff; font-family: system-ui, sans-serif;
+            line-height: 1.4; box-sizing: border-box; display: flex; align-items: center;
+        }
+        .demo-popup-actions { display: flex; justify-content: flex-end; gap: 5px; margin-top: 6px; }
+        .demo-popup-btn {
+            padding: 5px 12px; font-size: 10px; font-weight: 500;
+            border-radius: 14px; font-family: system-ui, sans-serif;
+        }
+        .demo-popup-btn.cancel { background: transparent; color: rgba(255,255,255,0.5); }
+        .demo-popup-btn.submit { background: #4ade80; color: #111; transition: transform 0.15s ease, box-shadow 0.15s ease; }
+        .demo-popup-btn.submit.clicked {
+            transform: scale(0.9); box-shadow: 0 0 8px rgba(74,222,128,0.6);
+        }
+
+        /* Chat bubbles in Copilot panel */
+        .demo-chat-user {
+            margin-top: 6px; padding: 6px 10px; border-radius: 8px;
+            background: rgba(59,130,246,0.15); border: 1px solid rgba(59,130,246,0.25);
+            color: rgba(255,255,255,0.85); font-size: 9.5px; line-height: 1.5;
+            font-family: system-ui, sans-serif;
+            opacity: 0; transform: translateY(4px);
+            transition: opacity 0.4s ease, transform 0.4s ease;
+        }
+        .demo-chat-user.visible { opacity: 1; transform: translateY(0); }
+        .demo-chat-user-label {
+            font-size: 8px; font-weight: 700; color: #3b82f6;
+            margin-bottom: 2px; text-transform: uppercase; letter-spacing: 0.5px;
+        }
+        .demo-copilot-response {
+            margin-top: 6px; padding: 6px 10px; border-radius: 8px;
+            background: rgba(74,222,128,0.08); border: 1px solid rgba(74,222,128,0.2);
+            color: #4ade80; font-size: 9.5px; line-height: 1.5;
+            font-family: system-ui, sans-serif;
+            opacity: 0; transform: translateY(4px);
+            transition: opacity 0.4s ease, transform 0.4s ease;
+        }
+        .demo-copilot-response.visible { opacity: 1; transform: translateY(0); }
+        .demo-copilot-response-label {
+            font-size: 8px; font-weight: 700; color: #8B5CF6;
+            margin-bottom: 2px; display: flex; align-items: center; gap: 3px;
+        }
+
+        /* Text selection */
+        .demo-text-sel {
+            position: absolute; background: rgba(59,130,246,0.25);
+            border-radius: 2px; pointer-events: none; z-index: 35; height: 14px;
+            opacity: 0; transition: opacity 0.2s ease;
+        }
+        .demo-text-sel.visible { opacity: 1; }
+
+        /* Cursor */
+        .demo-cursor {
+            position: absolute; pointer-events: none; z-index: 100;
+            transition: left 0.4s cubic-bezier(0.4,0,0.2,1), top 0.4s cubic-bezier(0.4,0,0.2,1);
+        }
+        .demo-cursor svg { display: block; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.3)); }
+
+        /* VS Code Panel */
+        .demo-vscode {
+            position: absolute; top: 15px; right: 20px;
+            width: 350px; height: 290px;
+            background: #1e1e1e; border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 0 0 1px rgba(255,255,255,0.1), 0 4px 16px rgba(0,0,0,0.3), 0 12px 32px rgba(0,0,0,0.2);
+            opacity: 0; transform: translateY(8px) scale(0.98);
+            transition: opacity 0.35s ease, transform 0.35s cubic-bezier(0.34,1.56,0.64,1);
+            z-index: 60;
+        }
+        .demo-vscode.visible { opacity: 1; transform: translateY(0) scale(1); }
+        .demo-vscode-bar {
+            display: flex; align-items: center; gap: 6px;
+            padding: 8px 12px; background: #2d2d2d;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+        .demo-vscode-title {
+            flex: 1; text-align: center; font-size: 11px; font-weight: 600;
+            color: rgba(255,255,255,0.7); font-family: system-ui, sans-serif; margin-right: 36px;
+        }
+        .demo-vscode-content {
+            padding: 12px 14px; font-family: "SF Mono", Consolas, monospace;
+            font-size: 10px; line-height: 1.7; color: rgba(255,255,255,0.7);
+            white-space: pre-wrap; overflow: hidden;
+        }
+        .demo-vscode-content .md-h1 { color: #4ade80; font-weight: 700; font-size: 11px; }
+        .demo-vscode-content .md-h2 { color: #3b82f6; font-weight: 600; margin-top: 6px; }
+        .demo-vscode-content .md-meta { color: rgba(255,255,255,0.4); }
+        .demo-vscode-content .md-key { color: #f59e0b; }
+        .demo-vscode-content .md-val { color: #4ade80; }
+
+        /* Copilot icon in VS Code */
+        .demo-copilot-icon { display: inline-block; vertical-align: middle; margin-right: 4px; }
+
+        /* Demo caption */
+        .demo-caption {
+            text-align: center; font-size: 0.75rem; color: rgba(0,0,0,0.4);
+            margin: 1rem 0 0.5rem; font-family: system-ui, sans-serif;
+        }
+
+        /* Demo step indicators */
+        .demo-steps {
+            display: flex; justify-content: center; gap: 8px;
+            margin-top: 1.25rem;
+        }
+        .demo-step-dot {
+            width: 10px; height: 10px; border-radius: 50%;
+            background: rgba(0,0,0,0.12); cursor: pointer;
+            transition: background 0.3s, transform 0.3s;
+        }
+        .demo-step-dot.active {
+            background: var(--sapBrandColor); transform: scale(1.3);
+        }
+        .demo-step-label {
+            text-align: center; font-size: 0.9375rem; color: var(--sapTitleColor);
+            margin: 0.75rem 0 0.25rem; font-family: var(--sapFontFamily);
+            font-weight: 500; min-height: 1.5em;
+            transition: opacity 0.3s ease;
+        }
+        .demo-step-num {
+            display: inline-block;
+            background: var(--sapBrandColor); color: #fff;
+            font-size: 0.6875rem; font-weight: 700;
+            padding: 0.125rem 0.5rem; border-radius: 0.25rem;
+            margin-right: 0.375rem; vertical-align: 1px;
+        }
+
+        /* Demo section title */
+        .demo-section-title {
+            text-align: center; font-size: 1.25rem; font-weight: 700;
+            color: var(--sapTitleColor); margin-bottom: 0.5rem;
+        }
+        .demo-section-subtitle {
+            text-align: center; font-size: 0.875rem;
+            color: var(--sapSubtitleColor); margin-bottom: 1.25rem;
+        }
+
+        /* Demo animations */
+        @keyframes marker-pulse {
+            0%, 100% { box-shadow: 0 2px 6px rgba(0,0,0,0.2); }
+            50% { box-shadow: 0 2px 12px rgba(59,130,246,0.4); }
+        }
+        .demo-marker.visible { animation: marker-pulse 2.5s ease infinite; }
+        .demo-marker:nth-child(2) { animation-delay: 0.5s; }
+        .demo-marker:nth-child(3) { animation-delay: 1s; }
+
+        @keyframes cursor-float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-3px); }
+        }
+        .demo-cursor { animation: cursor-float 3s ease infinite; }
+
+        /* Responsive — scale entire demo on narrow screens */
+        @media (max-width: 768px) {
+            .demo-section { padding: 0 0.75rem; }
+            .demo-container-wrap { overflow: hidden; }
+            .demo-step-label { font-size: 0.8125rem; padding: 0 0.25rem; }
+            .sapStructureTable { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+            .sapStructureTable table { min-width: 480px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Shell Bar -->
+<header class="sapShellBar">
+    <a class="sapShellBar__logo" href="#">
+        <svg width="20" height="20" viewBox="0 0 32 32" fill="none">
+            <rect width="32" height="32" rx="6" fill="rgba(255,255,255,0.15)"/>
+            <path d="M8 16l4-8 4 8-4 8z" fill="#fff"/>
+            <path d="M16 16l4-8 4 8-4 8z" fill="rgba(255,255,255,0.6)"/>
+        </svg>
+        BTP Agentation
+    </a>
+    <div class="sapShellBar__spacer"></div>
+    <a class="sapShellBar__link" href="https://www.npmjs.com/package/btp-agentation" target="_blank">npm</a>
+</header>
+
+<!-- Hero -->
+<div class="sapObjectPageHeader">
+    <div class="sapObjectPageHeader__inner">
+        <div class="sapObjectPageHeader__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="3" width="18" height="18" rx="3"/>
+                <circle cx="12" cy="10" r="2.5"/>
+                <path d="M8 18l2-3h4l2 3"/>
+                <path d="M16 7l2-2m0 0h-2.5M18 5v2.5"/>
+            </svg>
+        </div>
+        <div class="sapObjectPageHeader__content">
+            <h1 class="sapObjectPageHeader__title">BTP Agentation</h1>
+            <p class="sapObjectPageHeader__subtitle">SAP Fiori の UI フィードバックをコードに変え、UI 開発を迅速化</p>
+            <p style="font-size:0.8125rem;color:var(--sapSubtitleColor);margin:0.25rem 0 0">SAP BTP / UI5 × Vibe Coding 開発者のためのブラウザツール</p>
+            <div class="sapObjectPageHeader__attributes">
+                <span class="sapObjectStatus sapObjectStatus--info"><span style="font-size:0.75rem">●</span> v5.0</span>
+                <span class="sapObjectStatus sapObjectStatus--positive"><span style="font-size:0.75rem">●</span> MIT License</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Interactive Demo -->
+<div class="demo-section">
+    <h2 class="demo-section-title">使い方デモ</h2>
+    <p class="demo-section-subtitle">Fiori アプリ上で UI フィードバックを収集し、AI コーディングアシスタントに送信するまでの流れ</p>
+    <div class="demo-container-wrap">
+    <div class="demo-container" id="demoContainer">
+        <div class="demo-browser" id="demoBrowser">
+            <div class="demo-bar">
+                <div class="demo-dot r"></div>
+                <div class="demo-dot y"></div>
+                <div class="demo-dot g"></div>
+                <div class="demo-url">your-fiori-app.launchpad.cfapps.hana.ondemand.com</div>
+            </div>
+            <div class="demo-content" id="demoContent">
+                <!-- Sidebar -->
+                <div class="demo-sidebar">
+                    <div class="demo-sidebar-logo"></div>
+                    <div style="display:flex;flex-direction:column;gap:8px">
+                        <div class="demo-sidebar-icon"></div>
+                        <div class="demo-sidebar-icon active"></div>
+                        <div class="demo-sidebar-icon"></div>
+                    </div>
+                    <div class="demo-sidebar-bottom">
+                        <div class="demo-sidebar-icon circle"></div>
+                    </div>
+                </div>
+                <!-- Main -->
+                <div class="demo-main">
+                    <div class="demo-header">
+                        <div class="demo-header-left">
+                            <div class="demo-app-logo"></div>
+                            <span class="demo-title-text">Company Portal</span>
+                        </div>
+                        <div style="display:flex;gap:8px;align-items:center">
+                            <div class="demo-btn-placeholder"></div>
+                            <div class="demo-avatar"></div>
+                        </div>
+                    </div>
+                    <!-- Metrics -->
+                    <div class="demo-metrics">
+                        <div class="demo-metric selected" id="demoMetric1">
+                            <div class="demo-metric-label"></div>
+                            <div class="demo-metric-value"></div>
+                        </div>
+                        <div class="demo-metric">
+                            <div class="demo-metric-label" style="width:55px"></div>
+                            <div class="demo-metric-value wide"></div>
+                        </div>
+                        <div class="demo-metric">
+                            <div class="demo-metric-label" style="width:38px"></div>
+                            <div class="demo-metric-value" style="width:40px"></div>
+                        </div>
+                    </div>
+                    <!-- Table -->
+                    <div class="demo-table">
+                        <div class="demo-table-header">
+                            <div class="demo-th" style="width:60px"></div>
+                            <div class="demo-th" style="width:45px"></div>
+                            <div class="demo-th" style="width:40px"></div>
+                        </div>
+                        <div class="demo-table-row">
+                            <div class="demo-td" style="width:70px"></div>
+                            <div class="demo-td" style="width:50px"></div>
+                            <div class="demo-td-pill"></div>
+                        </div>
+                        <div class="demo-table-row selected">
+                            <div class="demo-td" style="width:55px"></div>
+                            <div class="demo-td" style="width:42px"></div>
+                            <div class="demo-td-pill" style="width:42px"></div>
+                        </div>
+                        <div class="demo-table-row">
+                            <div class="demo-td" style="width:62px"></div>
+                            <div class="demo-td" style="width:38px"></div>
+                            <div class="demo-td-pill"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Toolbar -->
+                <div class="demo-toolbar expanded" id="demoToolbar">
+                    <div class="demo-toolbar-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.5"/><path d="M8 10h8M8 14h5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                    </div>
+                    <div class="demo-toolbar-buttons">
+                        <!-- List -->
+                        <div class="demo-toolbar-btn" style="position:relative">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                            <div class="demo-badge">0</div>
+                        </div>
+                        <!-- Copy / Copilot -->
+                        <div class="demo-toolbar-btn emp" id="demoCopyBtn">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><rect x="9" y="9" width="13" height="13" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" stroke="currentColor" stroke-width="1.5"/></svg>
+                        </div>
+                        <!-- Delete -->
+                        <div class="demo-toolbar-btn">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m3 0v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6h14z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        </div>
+                        <!-- Settings -->
+                        <div class="demo-toolbar-btn">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.5"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z" stroke="currentColor" stroke-width="1.5"/></svg>
+                        </div>
+                        <div class="demo-toolbar-divider"></div>
+                        <!-- Close -->
+                        <div class="demo-toolbar-btn">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Hover highlights -->
+                <div class="demo-hover-hl" id="demoHL1" style="left:59px;top:52px;width:calc((100% - 97px) / 3);height:55px"></div>
+                <div class="demo-hover-hl" id="demoHL2" style="left:46px;top:148px;width:calc(100% - 58px);height:32px"></div>
+                <div class="demo-hover-hl" id="demoHL3" style="left:57px;top:14px;width:130px;height:28px"></div>
+
+                <!-- Markers -->
+                <div class="demo-marker" id="demoM1" style="top:52px;left:90px">1</div>
+                <div class="demo-marker" id="demoM2" style="top:162px;left:350px">2</div>
+                <div class="demo-marker" id="demoM3" style="top:14px;left:186px">3</div>
+
+                <!-- Text selection on title -->
+                <div class="demo-text-sel" id="demoTextSel" style="left:85px;top:21px;width:92px"></div>
+
+                <!-- Popup 1 (KPI tile) -->
+                <div class="demo-popup" id="demoPopup1" style="left:140px;top:110px">
+                    <div class="demo-popup-header">sap.m.GenericTile</div>
+                    <div class="demo-popup-input" id="demoInput1"><span style="opacity:0.4">|</span></div>
+                    <div class="demo-popup-actions">
+                        <div class="demo-popup-btn cancel">キャンセル</div>
+                        <div class="demo-popup-btn submit" id="demoSubmit1">追加</div>
+                    </div>
+                </div>
+                <!-- Popup 2 (table row) -->
+                <div class="demo-popup" id="demoPopup2" style="left:200px;top:175px">
+                    <div class="demo-popup-header">sap.m.ObjectStatus</div>
+                    <div class="demo-popup-input" id="demoInput2"><span style="opacity:0.4">|</span></div>
+                    <div class="demo-popup-actions">
+                        <div class="demo-popup-btn cancel">キャンセル</div>
+                        <div class="demo-popup-btn submit" id="demoSubmit2">追加</div>
+                    </div>
+                </div>
+                <!-- Popup 3 (title) -->
+                <div class="demo-popup" id="demoPopup3" style="left:125px;top:44px">
+                    <div class="demo-popup-header">sap.m.Title (テキスト選択)</div>
+                    <div class="demo-popup-input" id="demoInput3"><span style="opacity:0.4">|</span></div>
+                    <div class="demo-popup-actions">
+                        <div class="demo-popup-btn cancel">キャンセル</div>
+                        <div class="demo-popup-btn submit" id="demoSubmit3">追加</div>
+                    </div>
+                </div>
+
+                <!-- Cursor -->
+                <div class="demo-cursor" id="demoCursor" style="left:130px;top:85px">
+                    <svg height="20" width="20" viewBox="0 0 32 32"><g fill="none" fill-rule="evenodd" transform="translate(10 7)"><path d="m6.148 18.473 1.863-1.003 1.615-.839-2.568-4.816h4.332l-11.379-11.408v16.015l3.316-3.221z" fill="#fff"/><path d="m6.431 17 1.765-.941-2.775-5.202h3.604l-8.025-8.043v11.188l2.53-2.442z" fill="#000"/></g></svg>
+                </div>
+            </div>
+        </div>
+
+        <!-- VS Code / Copilot Panel -->
+        <div class="demo-vscode" id="demoVSCode">
+            <div class="demo-vscode-bar">
+                <div class="demo-dot r" style="width:10px;height:10px"></div>
+                <div class="demo-dot y" style="width:10px;height:10px"></div>
+                <div class="demo-dot g" style="width:10px;height:10px"></div>
+                <div class="demo-vscode-title">
+                    <svg class="demo-copilot-icon" viewBox="0 0 16 16" width="14" height="14"><path fill="#8B5CF6" d="M7.998 15.035c-4.562 0-7.873-2.914-7.998-3.749V9.338c.085-.628.677-1.686 1.588-2.065.013-.07.024-.143.036-.218.029-.183.06-.384.126-.612-.201-.508-.254-1.084-.254-1.656 0-.87.463-1.735 1.05-2.317C3.15 1.861 3.87 1.449 4.5 1.449c.75 0 1.5.5 2 1h3c.5-.5 1.25-1 2-1 .63 0 1.35.412 1.952 1.021.587.582 1.05 1.447 1.05 2.317 0 .572-.053 1.148-.254 1.656.066.228.097.429.126.612.012.076.023.148.036.218.911.379 1.503 1.437 1.588 2.065v1.948c-.125.835-3.436 3.749-7.998 3.749z"/></svg>
+                    GitHub Copilot Chat
+                </div>
+            </div>
+            <div class="demo-vscode-content">
+<span class="md-h1"># Fiori UI フィードバック</span>
+
+<span class="md-meta">アプリ: Company Portal</span>
+<span class="md-meta">日時: 2026/3/3 14:30</span>
+<span class="md-meta">UI5: 1.120.5</span>
+
+<span class="md-h2">## 1. KPIの文字サイズを大きく</span>
+<span class="md-key">UI5:</span> <span class="md-val">sap.m.GenericTile</span>
+<span class="md-key">ID:</span> <span class="md-val">__xmlview0--kpi1</span>
+<span class="md-key">Binding:</span> <span class="md-val">{"/OverallScore"}</span>
+
+<span class="md-h2">## 2. ステータス列の色を変更</span>
+<span class="md-key">UI5:</span> <span class="md-val">sap.m.ObjectStatus</span>
+<span class="md-key">FE:</span> <span class="md-val">CDS アノテーション制御</span>
+
+<span class="md-h2">## 3. タイトルを目立たせる</span>
+<span class="md-key">テキスト:</span> <span class="md-val">"Supplier Evaluation"</span>
+
+<div class="demo-chat-user" id="demoChatUser">
+    <div class="demo-chat-user-label">You</div>
+    このフィードバックを修正してデプロイして
+</div>
+<div class="demo-copilot-response" id="demoCopilotResponse">
+    <div class="demo-copilot-response-label">
+        <svg viewBox="0 0 16 16" width="10" height="10"><path fill="#8B5CF6" d="M7.998 15.035c-4.562 0-7.873-2.914-7.998-3.749V9.338c.085-.628.677-1.686 1.588-2.065.013-.07.024-.143.036-.218.029-.183.06-.384.126-.612-.201-.508-.254-1.084-.254-1.656 0-.87.463-1.735 1.05-2.317C3.15 1.861 3.87 1.449 4.5 1.449c.75 0 1.5.5 2 1h3c.5-.5 1.25-1 2-1 .63 0 1.35.412 1.952 1.021.587.582 1.05 1.447 1.05 2.317 0 .572-.053 1.148-.254 1.656.066.228.097.429.126.612.012.076.023.148.036.218.911.379 1.503 1.437 1.588 2.065v1.948c-.125.835-3.436 3.749-7.998 3.749z"/></svg>
+        Copilot
+    </div>
+    <span id="demoCopilotText"></span>
+</div>
+            </div>
+        </div>
+    </div>
+    </div><!-- /demo-container-wrap -->
+    <!-- Step indicators -->
+    <div class="demo-steps" id="demoSteps">
+        <div class="demo-step-dot active" data-step="0"></div>
+        <div class="demo-step-dot" data-step="1"></div>
+        <div class="demo-step-dot" data-step="2"></div>
+        <div class="demo-step-dot" data-step="3"></div>
+    </div>
+    <p class="demo-step-label" id="demoStepLabel">
+        <span class="demo-step-num">Step 1/4</span>
+        KPI タイルをクリック → 「KPIの文字サイズを大きく」と入力
+    </p>
+</div>
+
+<!-- Page Content -->
+<div class="sapObjectPageContent">
+
+    <!-- npm -->
+    <div class="sapUxAPObjectPageSection">
+        <div class="sapNpmSection">
+            <svg class="sapNpmSection__icon" viewBox="0 0 256 256"><rect width="256" height="256" rx="24" fill="#C12127"/><path d="M48 48h160v160H128V88H88v120H48z" fill="#fff"/></svg>
+            <div class="sapNpmSection__content">
+                <div class="sapNpmSection__title">npm でインストール</div>
+                <div class="sapNpmSection__desc"></div>
+                <button class="sapNpmInstall" onclick="copyNpm(this)" title="クリックでコピー">
+                    <span class="sapNpmInstall__prompt">$</span> npm install btp-agentation
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="sapUxAPObjectPageSection">
+        <h2 class="sapUxAPObjectPageSection__title">導入方法</h2>
+        <div class="sapMethodTabs" role="tablist">
+            <button class="sapMethodTab active" onclick="switchTab(event,'tab-bm')" role="tab">ブックマークレット</button>
+            <button class="sapMethodTab" onclick="switchTab(event,'tab-npm')" role="tab">npm / npx</button>
+            <button class="sapMethodTab" onclick="switchTab(event,'tab-script')" role="tab">script タグ</button>
+            <button class="sapMethodTab" onclick="switchTab(event,'tab-console')" role="tab">DevTools</button>
+        </div>
+
+        <div id="tab-bm" class="sapMethodPanel active">
+            <div class="sapFCard"><div class="sapFCard__content">
+                <div style="text-align:center;margin-bottom:1.25rem;padding-bottom:1.25rem;border-bottom:1px solid var(--sapSectionBorder)">
+                    <p style="font-size:0.875rem;color:var(--sapSubtitleColor);margin:0 0 0.75rem">下のボタンをブックマークバーにドラッグ＆ドロップ</p>
+                    <a class="sapMBtnEmphasized"
+                       href="javascript:void(function(){if(document.getElementById('fa-toolbar')){return}var s=document.createElement('script');s.src='https://pcmn1000.github.io/my-side-by-side-app/btp-agentation.js';document.head.appendChild(s)}())"
+                       title="ブックマークバーにドラッグ"
+                       onclick="alert('ブックマークバーにドラッグ＆ドロップしてください。\nクリックではなくドラッグです。'); return false;">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M2 2v12h12V2H2zm1 1h10v2H3V3zm0 3h10v7H3V6z"/></svg>
+                        BTP Agentation
+                    </a>
+                    <span class="dragHint">↑ このボタンをブックマークバーにドラッグ＆ドロップ</span>
+                </div>
+                <div>
+                    <div class="sapMStep">
+                        <div class="sapMStep__indicator"><div class="sapMStep__number">1</div><div class="sapMStep__line"></div></div>
+                        <div><div class="sapMStep__title">ブックマークレットを登録</div><div class="sapMStep__text">上の青い「BTP Agentation」ボタンをブックマークバーにドラッグ＆ドロップします。<br>ブックマークバーが表示されていない場合は <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>B</kbd> で表示。</div></div>
+                    </div>
+                    <div class="sapMStep">
+                        <div class="sapMStep__indicator"><div class="sapMStep__number">2</div><div class="sapMStep__line"></div></div>
+                        <div><div class="sapMStep__title">Fiori アプリを開く</div><div class="sapMStep__text">SAP BTP / S/4HANA 上の Fiori / UI5 アプリケーションをブラウザで開きます。</div></div>
+                    </div>
+                    <div class="sapMStep">
+                        <div class="sapMStep__indicator"><div class="sapMStep__number">3</div><div class="sapMStep__line"></div></div>
+                        <div><div class="sapMStep__title">ブックマークレットをクリック</div><div class="sapMStep__text">ブックマークバーの「BTP Agentation」をクリック。ダークテーマツールバーが右下に表示されます。<br>キーボードショートカット: <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>A</kbd></div></div>
+                    </div>
+                    <div class="sapMStep">
+                        <div class="sapMStep__indicator"><div class="sapMStep__number">4</div></div>
+                        <div><div class="sapMStep__title">フィードバックを AI アシスタントに送信</div><div class="sapMStep__text">UI 要素をクリック → 注記を入力 → コピーボタンでフィードバックをクリップボードにコピー → GitHub Copilot、Claude Code などの AI コーディングアシスタントに貼り付け。</div></div>
+                    </div>
+                </div>
+            </div></div>
+        </div>
+
+        <div id="tab-npm" class="sapMethodPanel">
+            <div class="sapGrid2col">
+                <div class="sapFCard"><div class="sapFCard__header"><div class="sapFCard__title">グローバルインストール</div></div><div class="sapFCard__content">
+                    <div class="sapMStep">
+                        <div class="sapMStep__indicator"><div class="sapMStep__number">1</div><div class="sapMStep__line"></div></div>
+                        <div><div class="sapMStep__title">インストール</div><div class="sapMStep__text">ターミナルで以下を実行:</div></div>
+                    </div>
+                    <div class="sapCodeCard" style="margin-top:0.5rem"><div class="sapCodeCard__header">Terminal<button class="sapCodeCard__copyBtn" onclick="copyCode(this,'npm install -g btp-agentation')">コピー</button></div><div class="sapCodeCard__body">npm install -g btp-agentation</div></div>
+                    <div class="sapMStep" style="margin-top:0.75rem">
+                        <div class="sapMStep__indicator"><div class="sapMStep__number">2</div><div class="sapMStep__line"></div></div>
+                        <div><div class="sapMStep__title">使い方を確認</div><div class="sapMStep__text">CLI で各種コードを取得:</div></div>
+                    </div>
+                    <div class="sapCodeCard" style="margin-top:0.5rem"><div class="sapCodeCard__header">Terminal<button class="sapCodeCard__copyBtn" onclick="copyCode(this,'btp-agentation')">コピー</button></div><div class="sapCodeCard__body">btp-agentation</div></div>
+                    <div class="sapMStep" style="margin-top:0.75rem">
+                        <div class="sapMStep__indicator"><div class="sapMStep__number">3</div></div>
+                        <div><div class="sapMStep__title">ローカルサーバー起動</div><div class="sapMStep__text">開発中はローカルから配信も可能:</div></div>
+                    </div>
+                    <div class="sapCodeCard" style="margin-top:0.5rem"><div class="sapCodeCard__header">Terminal<button class="sapCodeCard__copyBtn" onclick="copyCode(this,'btp-agentation --serve')">コピー</button></div><div class="sapCodeCard__body">btp-agentation --serve</div></div>
+                </div></div>
+                <div class="sapFCard"><div class="sapFCard__header"><div class="sapFCard__title">npx でインストール不要で実行</div></div><div class="sapFCard__content">
+                    <div class="sapMStep">
+                        <div class="sapMStep__indicator"><div class="sapMStep__number">1</div><div class="sapMStep__line"></div></div>
+                        <div><div class="sapMStep__title">使い方を表示</div><div class="sapMStep__text">インストールせずに即座に実行:</div></div>
+                    </div>
+                    <div class="sapCodeCard" style="margin-top:0.5rem"><div class="sapCodeCard__header">Terminal<button class="sapCodeCard__copyBtn" onclick="copyCode(this,'npx btp-agentation')">コピー</button></div><div class="sapCodeCard__body">npx btp-agentation</div></div>
+                    <div class="sapMStep" style="margin-top:0.75rem">
+                        <div class="sapMStep__indicator"><div class="sapMStep__number">2</div></div>
+                        <div><div class="sapMStep__title">CLI オプション</div><div class="sapMStep__text">各種出力を取得:</div></div>
+                    </div>
+                    <div class="sapCodeCard" style="margin-top:0.5rem"><div class="sapCodeCard__header">CLI オプション一覧</div>
+                        <div class="sapCodeCard__body">npx btp-agentation --script-tag   # &lt;script&gt; タグを出力
+npx btp-agentation --bookmarklet  # ブックマークレットを出力
+npx btp-agentation --console      # コンソール用コードを出力
+npx btp-agentation --url          # CDN URL を出力
+npx btp-agentation --serve [port] # ローカルサーバー起動</div>
+                    </div>
+                    <div style="margin-top:1rem">
+                        <div class="sapMStep__title">Node.js から利用</div>
+                        <div class="sapCodeCard" style="margin-top:0.5rem"><div class="sapCodeCard__header">JavaScript<button class="sapCodeCard__copyBtn" onclick="copyCode(this,&quot;const btp = require('btp-agentation');\nconsole.log(btp.getScriptTag());&quot;)">コピー</button></div><div class="sapCodeCard__body">const btp = require('btp-agentation');
+console.log(btp.getScriptTag());
+console.log(btp.getBookmarklet());
+console.log(btp.getCdnUrl());</div></div>
+                    </div>
+                </div></div>
+            </div>
+        </div>
+
+        <div id="tab-script" class="sapMethodPanel">
+            <div class="sapFCard"><div class="sapFCard__content">
+                <div class="sapMStep">
+                    <div class="sapMStep__indicator"><div class="sapMStep__number">1</div><div class="sapMStep__line"></div></div>
+                    <div><div class="sapMStep__title">HTML に script タグを追加</div><div class="sapMStep__text">開発環境の HTML ファイル（index.html など）に以下を追加します。本番環境には含めないでください。</div></div>
+                </div>
+                <div class="sapCodeCard" style="margin-top:0.5rem"><div class="sapCodeCard__header">HTML<button class="sapCodeCard__copyBtn" onclick="copyCode(this,'&lt;script src=&quot;https://pcmn1000.github.io/my-side-by-side-app/btp-agentation.js&quot;&gt;&lt;/script&gt;')">コピー</button></div><div class="sapCodeCard__body">&lt;script src="https://pcmn1000.github.io/my-side-by-side-app/btp-agentation.js"&gt;&lt;/script&gt;</div></div>
+                <div class="sapMStep" style="margin-top:0.75rem">
+                    <div class="sapMStep__indicator"><div class="sapMStep__number">2</div></div>
+                    <div><div class="sapMStep__title">ページをリロード</div><div class="sapMStep__text">ブラウザでページをリロードすると、BTP Agentation が自動で読み込まれます。<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>A</kbd> で起動。</div></div>
+                </div>
+            </div></div>
+        </div>
+
+        <div id="tab-console" class="sapMethodPanel">
+            <div class="sapFCard"><div class="sapFCard__content">
+                <div class="sapMStep">
+                    <div class="sapMStep__indicator"><div class="sapMStep__number">1</div><div class="sapMStep__line"></div></div>
+                    <div><div class="sapMStep__title">DevTools を開く</div><div class="sapMStep__text"><kbd>F12</kbd> または <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>I</kbd> でブラウザの開発者ツールを開き、Console タブに移動します。</div></div>
+                </div>
+                <div class="sapMStep">
+                    <div class="sapMStep__indicator"><div class="sapMStep__number">2</div></div>
+                    <div><div class="sapMStep__title">以下のコードを貼り付けて Enter</div><div class="sapMStep__text">コンソールに貼り付けて実行するだけで BTP Agentation が起動します。</div></div>
+                </div>
+                <div class="sapCodeCard" style="margin-top:0.5rem"><div class="sapCodeCard__header">Console<button class="sapCodeCard__copyBtn" onclick="copyCode(this,&quot;var s=document.createElement('script');s.src='https://pcmn1000.github.io/my-side-by-side-app/btp-agentation.js';document.head.appendChild(s);&quot;)">コピー</button></div><div class="sapCodeCard__body">var s=document.createElement('script');s.src='https://pcmn1000.github.io/my-side-by-side-app/btp-agentation.js';document.head.appendChild(s);</div></div>
+                <div style="margin-top:1rem;padding:0.75rem 1rem;background:rgba(0,0,0,0.02);border:1px solid var(--sapSectionBorder);border-radius:0.5rem">
+                    <div class="sapMStep__title" style="font-size:0.8125rem;margin-bottom:0.375rem">⚠ コンソールに貼り付けできない場合</div>
+                    <div class="sapMStep__text">ブラウザのセキュリティ設定により、コンソールへの貼り付けがブロックされる場合があります。<br>その場合は、コンソールに <kbd>allow pasting</kbd> と入力して <kbd>Enter</kbd> を押してから、再度コードを貼り付けてください。</div>
+                </div>
+            </div></div>
+        </div>
+    </div>
+
+    <!-- How it works -->
+    <div class="sapUxAPObjectPageSection">
+        <h2 class="sapUxAPObjectPageSection__title">仕組み</h2>
+
+        <p class="sapHowItWorksIntro">BTP Agentation は、ブラウザ上で動作する軽量な JavaScript ツールです。SAP Fiori / UI5 アプリケーションの画面に対して、開発者が UI フィードバックを構造化されたテキストとして記録し、AI コーディングアシスタントに渡すことで、UI 修正コードの生成を効率化します。</p>
+
+        <div class="sapHowItWorksGrid">
+            <div class="sapHowItWorksCard sapHowItWorksCard--1">
+                <div class="sapHowItWorksCard__num">1</div>
+                <div class="sapHowItWorksCard__title">スクリプトの注入</div>
+                <div class="sapHowItWorksCard__text">ブックマークレット、script タグ、DevTools Console のいずれかで対象ページにスクリプトを読み込みます。DOM やデータを外部に送信しません。</div>
+            </div>
+            <div class="sapHowItWorksCard sapHowItWorksCard--2">
+                <div class="sapHowItWorksCard__num">2</div>
+                <div class="sapHowItWorksCard__title">UI 要素の選択と注記</div>
+                <div class="sapHowItWorksCard__text">ツールバーが表示された状態で UI 要素をクリックするとメタ情報が取得されます。ポップアップに修正内容や要望を入力できます。</div>
+            </div>
+            <div class="sapHowItWorksCard sapHowItWorksCard--3">
+                <div class="sapHowItWorksCard__num">3</div>
+                <div class="sapHowItWorksCard__title">フィードバックの構造化</div>
+                <div class="sapHowItWorksCard__text">入力された注記は要素情報とともに Markdown 形式で整形されます。複数の UI 要素に対して連続して注記を追加できます。</div>
+            </div>
+            <div class="sapHowItWorksCard sapHowItWorksCard--4">
+                <div class="sapHowItWorksCard__num">4</div>
+                <div class="sapHowItWorksCard__title">AI アシスタントへの連携</div>
+                <div class="sapHowItWorksCard__text">生成されたフィードバックをコピーし、GitHub Copilot・Claude Code・Cursor 等に貼り付けると、AI が UI5/Fiori コード修正を提案します。</div>
+            </div>
+        </div>
+
+        <div class="sapSecurityNote">
+            <span class="sapSecurityNote__icon">🔒</span>
+            すべての処理はブラウザ内で完結します。外部サーバーへのデータ送信や認証情報の取得は行いません。
+        </div>
+
+        <h3 class="sapSubHeading">取得する Fiori / UI5 構造情報</h3>
+        <p style="margin:0 0 0.75rem;font-size:0.875rem;color:var(--sapTextColor)">クリックした UI 要素から、<code style="background:rgba(0,112,242,0.06);padding:0.125rem 0.375rem;border-radius:0.25rem;font-size:0.8125rem;color:var(--sapBrandColor)">sap.ui.getCore().byId()</code> を起点に以下の情報を自動取得します。</p>
+
+        <div class="sapStructureTable">
+            <table>
+                <thead><tr>
+                    <th>項目</th>
+                    <th>内容</th>
+                </tr></thead>
+                <tbody>
+                    <tr><td>コントロール型</td><td><code>getMetadata().getName()</code> で取得（例: <code>sap.m.Button</code>, <code>sap.fe.macros.Table</code>）</td></tr>
+                    <tr><td>コントロール ID</td><td><code>getId()</code> で取得。ビュー内での配置を特定</td></tr>
+                    <tr><td>親コントロール</td><td><code>getParent().getMetadata().getName()</code> で階層構造を把握</td></tr>
+                    <tr><td>データバインディング</td><td><code>mBindingInfos</code> からプロパティとパスの対応（例: <code>{"value": "/ProductName"}</code>）</td></tr>
+                    <tr><td>プロパティ値</td><td><code>text</code>, <code>value</code>, <code>title</code>, <code>label</code>, <code>type</code>, <code>visible</code> の現在値</td></tr>
+                    <tr><td>Fiori Elements 判定</td><td><code>sap.fe.*</code> / <code>sap.ui.mdc.*</code> の場合は CDS アノテーション制御と判定し、<code>@UI.LineItem</code> 等の修正を案内</td></tr>
+                    <tr><td>DOM セレクタ</td><td>要素の DOM 上の位置を CSS セレクタ形式で記録</td></tr>
+                    <tr><td>位置・サイズ</td><td><code>getBoundingClientRect()</code> による座標とサイズ</td></tr>
+                    <tr><td>CSS 情報</td><td><code>getComputedStyle()</code> による fontSize, color, backgroundColor, padding, margin, display（詳細モード時）</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <p style="margin:0.75rem 0 0;color:var(--sapSubtitleColor);font-size:0.8125rem">これらの情報はページタイトル、URL、UI5 バージョンとともに Markdown 形式で出力されます。AI アシスタントはこの構造情報をもとに、XML ビュー・コントローラ・CDS アノテーションなど適切なレイヤーの修正コードを生成できます。</p>
+    </div>
+
+    <!-- Compatibility -->
+    <div class="sapUxAPObjectPageSection">
+        <h2 class="sapUxAPObjectPageSection__title">動作環境</h2>
+        <div class="sapFCard"><div class="sapFCard__content">
+            <div class="sapMTokens">
+                <span class="sapMToken">SAP Fiori Elements</span>
+                <span class="sapMToken">SAPUI5</span>
+                <span class="sapMToken">OpenUI5</span>
+                <span class="sapMToken">SAP BTP</span>
+                <span class="sapMToken">SAP S/4HANA</span>
+                <span class="sapMToken">SAP Fiori Launchpad</span>
+                <span class="sapMToken">Chrome</span>
+                <span class="sapMToken">Edge</span>
+                <span class="sapMToken">Firefox</span>
+            </div>
+        </div></div>
+    </div>
+</div>
+
+<!-- Footer -->
+<footer class="sapMFooter">
+    <div style="max-width:640px;margin:0 auto 1.25rem;padding:1rem 1.25rem;background:rgba(0,0,0,0.02);border:1px solid var(--sapSectionBorder);border-radius:0.5rem;text-align:left">
+        <p style="font-size:0.8125rem;font-weight:700;color:var(--sapTitleColor);margin-bottom:0.375rem">⚠ 免責事項（Disclaimer）</p>
+        <p style="font-size:0.75rem;color:var(--sapSubtitleColor);line-height:1.6;margin:0">
+            本ツールは開発・検証目的のみに提供されています。本番環境での使用は想定しておらず、推奨しません。<br>
+            本ツールの使用により生じた損害、データ損失、セキュリティ上の問題等について、作者は一切の責任を負いません。<br>
+            SAP、Fiori、SAPUI5、SAP BTP は SAP SE の商標です。本ツールは SAP SE とは無関係の非公式ツールです。
+        </p>
+    </div>
+    <p class="sapMFooter__text">BTP Agentation v5.0 — Made for SAP developers</p>
+    <p class="sapMFooter__text" style="margin-top:0.375rem">
+        <a class="sapMFooter__link" href="https://www.npmjs.com/package/btp-agentation" target="_blank">npm</a>
+        &nbsp;·&nbsp;
+        MIT License
+    </p>
+</footer>
+
+<script>
+/* ============================================================
+ * Demo Animation — 4 steps: annotate ①②③ then Copilot
+ * Each annotation: hover → popup → type → cursor to 追加 → click → close
+ * ============================================================ */
+(function() {
+    var TOTAL = 4;
+    var STEP_DURATION = 4200;
+    var state = 0;
+    var cursor = document.getElementById('demoCursor');
+    var browser = document.getElementById('demoBrowser');
+    var vscode = document.getElementById('demoVSCode');
+    var popup1 = document.getElementById('demoPopup1');
+    var popup2 = document.getElementById('demoPopup2');
+    var popup3 = document.getElementById('demoPopup3');
+    var input1 = document.getElementById('demoInput1');
+    var input2 = document.getElementById('demoInput2');
+    var input3 = document.getElementById('demoInput3');
+    var submit1 = document.getElementById('demoSubmit1');
+    var submit2 = document.getElementById('demoSubmit2');
+    var submit3 = document.getElementById('demoSubmit3');
+    var m1 = document.getElementById('demoM1');
+    var m2 = document.getElementById('demoM2');
+    var m3 = document.getElementById('demoM3');
+    var hl1 = document.getElementById('demoHL1');
+    var hl2 = document.getElementById('demoHL2');
+    var hl3 = document.getElementById('demoHL3');
+    var textSel = document.getElementById('demoTextSel');
+    var copyBtn = document.getElementById('demoCopyBtn');
+    var badge = document.querySelector('.demo-badge');
+    var copilotResp = document.getElementById('demoCopilotResponse');
+    var chatUser = document.getElementById('demoChatUser');
+    var copilotText = document.getElementById('demoCopilotText');
+
+    var container = document.getElementById('demoContainer');
+    var content = document.getElementById('demoContent');
+    var texts = [
+        'KPIの文字サイズを大きく',
+        'ステータス列の色を変更',
+        'タイトルを目立たせる'
+    ];
+    var typeTimers = [];
+
+    function clearTypeTimers() {
+        typeTimers.forEach(function(t) { clearTimeout(t); });
+        typeTimers = [];
+    }
+
+    function typeText(el, text, cb) {
+        var i = 0;
+        el.textContent = '';
+        function next() {
+            if (i < text.length) {
+                el.textContent = text.substring(0, i + 1) + '|';
+                i++;
+                typeTimers.push(setTimeout(next, 70));
+            } else {
+                el.innerHTML = text + '<span style="opacity:0.4">|</span>';
+                if (cb) cb();
+            }
+        }
+        typeTimers.push(setTimeout(next, 250));
+    }
+
+    function hideAllPopups() {
+        popup1.classList.remove('visible');
+        popup2.classList.remove('visible');
+        popup3.classList.remove('visible');
+    }
+    function hideAllHL() {
+        hl1.classList.remove('visible');
+        hl2.classList.remove('visible');
+        hl3.classList.remove('visible');
+    }
+    function clearAllClicked() {
+        submit1.classList.remove('clicked');
+        submit2.classList.remove('clicked');
+        submit3.classList.remove('clicked');
+    }
+
+    /* Get element center position relative to demo-content (scale-aware) */
+    function relPos(el) {
+        var elRect = el.getBoundingClientRect();
+        var cRect = content.getBoundingClientRect();
+        var s = demoScale;
+        return {
+            x: (elRect.left - cRect.left + elRect.width / 2) / s,
+            y: (elRect.top - cRect.top + elRect.height / 2) / s
+        };
+    }
+
+    /* Annotate helper: hover → popup → type → cursor to submit → click → marker */
+    function animateAnnotation(hl, popup, input, submit, marker, text, badgeNum, submitPos) {
+        hl.classList.add('visible');
+        // 500ms: popup opens
+        typeTimers.push(setTimeout(function() {
+            popup.classList.add('visible');
+            // Type text, then move cursor to submit button
+            typeText(input, text, function() {
+                // After typing done: move cursor to 追加 button
+                typeTimers.push(setTimeout(function() {
+                    cursor.style.left = submitPos.x + 'px';
+                    cursor.style.top = submitPos.y + 'px';
+                }, 150));
+                // Click the submit button
+                typeTimers.push(setTimeout(function() {
+                    submit.classList.add('clicked');
+                }, 450));
+                // Marker appears, popup closes
+                typeTimers.push(setTimeout(function() {
+                    submit.classList.remove('clicked');
+                    popup.classList.remove('visible');
+                    hl.classList.remove('visible');
+                    marker.classList.add('visible');
+                    if (badge) badge.textContent = String(badgeNum);
+                }, 750));
+            });
+        }, 500));
+    }
+
+    function setState(n) {
+        state = n;
+        clearTypeTimers();
+        hideAllPopups();
+        hideAllHL();
+        clearAllClicked();
+        browser.classList.remove('faded');
+        vscode.classList.remove('visible');
+        textSel.classList.remove('visible');
+        if (copyBtn) copyBtn.classList.remove('active');
+        if (copilotResp) copilotResp.classList.remove('visible');
+        if (chatUser) chatUser.classList.remove('visible');
+        if (copilotText) copilotText.textContent = '';
+
+        switch(n) {
+            case 0: // ① KPI tile
+                m1.classList.remove('visible');
+                m2.classList.remove('visible');
+                m3.classList.remove('visible');
+                if (badge) badge.textContent = '0';
+                input1.innerHTML = '<span style="opacity:0.4">|</span>';
+                input2.innerHTML = '<span style="opacity:0.4">|</span>';
+                input3.innerHTML = '<span style="opacity:0.4">|</span>';
+                cursor.style.left = '112px';
+                cursor.style.top = '78px';
+                animateAnnotation(hl1, popup1, input1, submit1, m1, texts[0], 1,
+                    { x: 205, y: 185 });
+                break;
+            case 1: // ② Table row
+                m1.classList.add('visible');
+                m2.classList.remove('visible');
+                m3.classList.remove('visible');
+                if (badge) badge.textContent = '1';
+                input1.innerHTML = texts[0] + '<span style="opacity:0.4">|</span>';
+                input2.innerHTML = '<span style="opacity:0.4">|</span>';
+                input3.innerHTML = '<span style="opacity:0.4">|</span>';
+                cursor.style.left = '230px';
+                cursor.style.top = '155px';
+                animateAnnotation(hl2, popup2, input2, submit2, m2, texts[1], 2,
+                    { x: 265, y: 250 });
+                break;
+            case 2: // ③ Title
+                m1.classList.add('visible');
+                m2.classList.add('visible');
+                m3.classList.remove('visible');
+                if (badge) badge.textContent = '2';
+                input1.innerHTML = texts[0] + '<span style="opacity:0.4">|</span>';
+                input2.innerHTML = texts[1] + '<span style="opacity:0.4">|</span>';
+                input3.innerHTML = '<span style="opacity:0.4">|</span>';
+                textSel.classList.add('visible');
+                cursor.style.left = '140px';
+                cursor.style.top = '26px';
+                animateAnnotation(hl3, popup3, input3, submit3, m3, texts[2], 3,
+                    { x: 190, y: 119 });
+                break;
+            case 3: // Copy → Copilot → response
+                m1.classList.add('visible');
+                m2.classList.add('visible');
+                m3.classList.add('visible');
+                if (badge) badge.textContent = '3';
+                input1.innerHTML = texts[0] + '<span style="opacity:0.4">|</span>';
+                input2.innerHTML = texts[1] + '<span style="opacity:0.4">|</span>';
+                input3.innerHTML = texts[2] + '<span style="opacity:0.4">|</span>';
+                var copyPos = relPos(copyBtn);
+                cursor.style.left = copyPos.x + 'px';
+                cursor.style.top = copyPos.y + 'px';
+                typeTimers.push(setTimeout(function() {
+                    if (copyBtn) copyBtn.classList.add('active');
+                }, 400));
+                typeTimers.push(setTimeout(function() {
+                    browser.classList.add('faded');
+                    vscode.classList.add('visible');
+                    cursor.style.left = '420px';
+                    cursor.style.top = '120px';
+                }, 1000));
+                // User message appears
+                typeTimers.push(setTimeout(function() {
+                    if (chatUser) chatUser.classList.add('visible');
+                }, 1800));
+                // Copilot response with typing effect
+                typeTimers.push(setTimeout(function() {
+                    if (copilotResp) {
+                        copilotResp.classList.add('visible');
+                        var respText = '\u2705 3\u4ef6\u306e\u4fee\u6b63\u3092\u5b8c\u4e86\u3057\u307e\u3057\u305f\u3002\ncf deploy \u3067 BTP \u306b\u30c7\u30d7\u30ed\u30a4\u6e08\u307f\u3067\u3059\uff01\ud83d\ude80';
+                        var ri = 0;
+                        function typeResp() {
+                            if (ri < respText.length) {
+                                copilotText.textContent = respText.substring(0, ri + 1);
+                                ri++;
+                                typeTimers.push(setTimeout(typeResp, 40));
+                            }
+                        }
+                        typeResp();
+                    }
+                }, 2600));
+                break;
+        }
+    }
+
+    var stepLabels = [
+        '<span class="demo-step-num">Step 1/4</span> KPI \u30bf\u30a4\u30eb\u3092\u30af\u30ea\u30c3\u30af \u2192 \u300cKPI\u306e\u6587\u5b57\u30b5\u30a4\u30ba\u3092\u5927\u304d\u304f\u300d\u3068\u5165\u529b \u2192 \u8ffd\u52a0',
+        '<span class="demo-step-num">Step 2/4</span> \u30c6\u30fc\u30d6\u30eb\u884c\u3092\u30af\u30ea\u30c3\u30af \u2192 \u300c\u30b9\u30c6\u30fc\u30bf\u30b9\u5217\u306e\u8272\u3092\u5909\u66f4\u300d\u3068\u5165\u529b \u2192 \u8ffd\u52a0',
+        '<span class="demo-step-num">Step 3/4</span> \u30bf\u30a4\u30c8\u30eb\u3092\u30c6\u30ad\u30b9\u30c8\u9078\u629e \u2192 \u300c\u30bf\u30a4\u30c8\u30eb\u3092\u76ee\u7acb\u305f\u305b\u308b\u300d\u3068\u5165\u529b \u2192 \u8ffd\u52a0',
+        '<span class="demo-step-num">Step 4/4</span> UI\u4fee\u6b63\u7b87\u6240\u3092\u307e\u3068\u3081\u3066\u30b3\u30d4\u30fc \u2192 Copilot \u306b\u4e00\u62ec\u4f9d\u983c \u2192 \u4fee\u6b63\u5b8c\u4e86\uff01'
+    ];
+    var stepLabel = document.getElementById('demoStepLabel');
+    var stepDots = document.querySelectorAll('.demo-step-dot');
+
+    function updateStepUI(n) {
+        stepDots.forEach(function(d, i) {
+            d.classList.toggle('active', i === n);
+        });
+        if (stepLabel) {
+            stepLabel.style.opacity = '0';
+            setTimeout(function() {
+                stepLabel.innerHTML = stepLabels[n];
+                stepLabel.style.opacity = '1';
+            }, 200);
+        }
+    }
+
+    // Click on dots to manually navigate
+    stepDots.forEach(function(dot, i) {
+        dot.addEventListener('click', function() {
+            setState(i);
+            updateStepUI(i);
+            clearInterval(autoTimer);
+            autoTimer = setInterval(autoAdvance, STEP_DURATION);
+        });
+    });
+
+    /* Scale demo to fit narrow screens */
+    var demoScale = 1;
+    var demoWrap = container.parentElement; // demo-container-wrap
+    var DEMO_MIN_W = 500;
+    function updateDemoScale() {
+        if (!container || !demoWrap) return;
+        var available = demoWrap.clientWidth;
+        if (available < DEMO_MIN_W) {
+            demoScale = available / DEMO_MIN_W;
+            container.style.width = DEMO_MIN_W + 'px';
+            container.style.transform = 'scale(' + demoScale + ')';
+            container.style.transformOrigin = 'top left';
+            demoWrap.style.height = (320 * demoScale) + 'px';
+        } else {
+            demoScale = 1;
+            container.style.width = '';
+            container.style.transform = '';
+            container.style.transformOrigin = '';
+            demoWrap.style.height = '';
+        }
+    }
+    updateDemoScale();
+    window.addEventListener('resize', function() {
+        updateDemoScale();
+        setState(state);
+    });
+
+    // Initial state
+    setState(0);
+    updateStepUI(0);
+
+    function autoAdvance() {
+        state = (state + 1) % TOTAL;
+        setState(state);
+        updateStepUI(state);
+    }
+
+    var autoTimer = setInterval(autoAdvance, STEP_DURATION);
+})();
+
+/* ============================================================
+ * Page Interactions
+ * ============================================================ */
+function switchTab(e, panelId) {
+    document.querySelectorAll('.sapMethodTab').forEach(function(t) { t.classList.remove('active'); });
+    document.querySelectorAll('.sapMethodPanel').forEach(function(p) { p.classList.remove('active'); });
+    e.target.classList.add('active');
+    document.getElementById(panelId).classList.add('active');
+}
+function copyCode(btn, text) {
+    var decoded = text.replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&quot;/g,'"').replace(/&amp;/g,'&');
+    navigator.clipboard.writeText(decoded).then(function() {
+        btn.classList.add('copied');
+        btn.textContent = 'コピー完了';
+        setTimeout(function() { btn.classList.remove('copied'); btn.textContent = 'コピー'; }, 2000);
+    });
+}
+function copyNpm(btn) {
+    navigator.clipboard.writeText('npm install btp-agentation').then(function() {
+        btn.classList.add('copied');
+        setTimeout(function() { btn.classList.remove('copied'); }, 2000);
+    });
+}
+</script>
+</body>
+</html>

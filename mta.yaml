@@ -1,0 +1,92 @@
+_schema-version: 3.3.0
+ID: my-side-by-side-app
+version: 1.0.0
+description: "サプライヤー評価ポータル - SAP BTP Side-by-Side Extension"
+parameters:
+  enable-parallel-deployments: true
+build-parameters:
+  before-all:
+    - builder: custom
+      commands:
+        - npm ci
+        - npx cds build --production
+
+modules:
+  # ---- CAP サービスモジュール ----
+  - name: my-side-by-side-app-srv
+    type: nodejs
+    path: gen/srv
+    parameters:
+      instances: 1
+      buildpack: nodejs_buildpack
+      memory: 256M
+    build-parameters:
+      builder: npm-ci
+    provides:
+      - name: srv-api
+        properties:
+          srv-url: ${default-url}
+    requires:
+      - name: my-side-by-side-app-auth
+      - name: my-side-by-side-app-db
+
+  # ---- HANA DB デプロイヤ ----
+  - name: my-side-by-side-app-db-deployer
+    type: hdb
+    path: gen/db
+    parameters:
+      buildpack: nodejs_buildpack
+    requires:
+      - name: my-side-by-side-app-db
+
+  # ---- Fiori アプリ (サプライヤー評価ポータル) ----
+  - name: my-side-by-side-app-suppliers
+    type: html5
+    path: app/suppliers
+    build-parameters:
+      build-result: webapp
+      builder: custom
+      commands: []
+      supported-platforms: []
+
+  # ---- Managed Approuter (HTML5 App Runtime) ----
+  - name: my-side-by-side-app-approuter
+    type: approuter.nodejs
+    path: app/router
+    parameters:
+      instances: 1
+      memory: 256M
+    build-parameters:
+      requires:
+        - name: my-side-by-side-app-suppliers
+          artifacts:
+            - "./*"
+          target-path: resources/suppliers/webapp
+    requires:
+      - name: srv-api
+        group: destinations
+        properties:
+          name: srv-api
+          url: ~{srv-url}
+          forwardAuthToken: true
+      - name: my-side-by-side-app-auth
+
+resources:
+  - name: my-side-by-side-app-auth
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: xsuaa
+      service-plan: application
+      path: ./xs-security.json
+      config:
+        xsappname: my-side-by-side-app-${org}-${space}
+        tenant-mode: dedicated
+        oauth2-configuration:
+          credential-types:
+            - "binding-secret"
+            - "x509"
+  - name: my-side-by-side-app-db
+    type: com.sap.xs.hdi-container
+    parameters:
+      service: hana
+      service-plan: hdi-shared

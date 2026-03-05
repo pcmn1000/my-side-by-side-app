@@ -1,0 +1,11 @@
+ID,supplierID,name,country,city,category,overallScore,qualityScore,deliveryScore,priceScore,responseScore,riskLevel,status,evaluationCount,overallCriticality,riskCriticality
+d1e2f3a4-b5c6-4d7e-8f9a-0b1c2d3e4f01,SUP001,東京精密工業,JP,Tokyo,精密部品,4.3,4.7,4.3,3.3,4.7,Low,Active,3,3,3
+d1e2f3a4-b5c6-4d7e-8f9a-0b1c2d3e4f02,SUP002,Shanghai Steel Co.,CN,Shanghai,鋼材,3.3,3.3,2.7,4.7,2.7,Medium,Active,3,2,2
+d1e2f3a4-b5c6-4d7e-8f9a-0b1c2d3e4f03,SUP003,Munich Automotive GmbH,DE,Munich,自動車部品,4.1,5.0,4.7,2.3,4.3,Low,Active,3,3,3
+d1e2f3a4-b5c6-4d7e-8f9a-0b1c2d3e4f04,SUP004,Texas Electronics Inc.,US,Dallas,電子部品,3.5,3.7,3.3,3.3,3.7,Medium,Active,3,2,2
+d1e2f3a4-b5c6-4d7e-8f9a-0b1c2d3e4f05,SUP005,大阪化学産業,JP,Osaka,化学原料,2.7,2.3,2.3,3.7,2.3,High,Active,3,1,1
+d1e2f3a4-b5c6-4d7e-8f9a-0b1c2d3e4f06,SUP006,Seoul Semiconductors,KR,Seoul,半導体,4.3,4.7,4.3,3.3,4.7,Low,Active,3,3,3
+d1e2f3a4-b5c6-4d7e-8f9a-0b1c2d3e4f07,SUP007,Bangkok Rubber Ltd.,TH,Bangkok,ゴム素材,3.8,3.3,3.7,4.7,3.3,Medium,Active,3,2,2
+d1e2f3a4-b5c6-4d7e-8f9a-0b1c2d3e4f08,SUP008,名古屋金属加工,JP,Nagoya,金属加工,4.2,4.3,4.7,3.3,4.3,Low,Active,3,3,3
+d1e2f3a4-b5c6-4d7e-8f9a-0b1c2d3e4f09,SUP009,Vietnam Manufacturing,VN,Ho Chi Minh,組立部品,3.0,2.3,2.3,4.7,2.7,Medium,Active,3,2,2
+d1e2f3a4-b5c6-4d7e-8f9a-0b1c2d3e4f10,SUP010,Taiwan Optics Corp.,TW,Taipei,光学部品,4.4,5.0,4.7,3.3,4.7,Low,Active,3,3,3
